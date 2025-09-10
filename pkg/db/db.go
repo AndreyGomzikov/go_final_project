@@ -39,7 +39,7 @@ func Open(path string) error {
 			return fmt.Errorf("apply schema: %w", err)
 		}
 	}
-	
+
 	var n int
 	_ = db.QueryRow("SELECT COUNT(1) FROM sqlite_master WHERE type='table' AND name='scheduler'").Scan(&n)
 	if n == 0 {
@@ -48,6 +48,6 @@ func Open(path string) error {
 			return fmt.Errorf("apply schema: %w", err)
 		}
 	}
-DB = db
+	DB = db
 	return nil
 }

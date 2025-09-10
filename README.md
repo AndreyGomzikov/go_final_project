@@ -39,11 +39,13 @@ git clone https://github.com/AndreyGomzikov/go_final_project.git
 ## Запуск тестов
 
 Для настройки тестов в tests\settings.go должны быть прописаны следующие переменные:
+```
 var Port = 7540
 var DBFile = "../scheduler.db"
 var FullNextDate = true
 var Search = true
 var Token =`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTY3ODM0MjEsImlhdCI6MTc1Njc1NDYyMSwicGhhc2giOiI1OTk0NDcxYWJiMDExMTJhZmNjMTgxNTlmNmNjNzRiNGY1MTFiOTk4MDZkYTU5YjNjYWY1YTljMTczY2FjZmM1In0.Eud5AHTiepSWZRIbDltaSuTaT6iF_aFpxu03190HjyA`
+```
 
 При запущенном сервере в другом терминале в директории проекта выполните:
 ```bush
@@ -53,10 +55,11 @@ go test -v -count=1 ./tests/...
 ## Сборка образа и запуск проекта в Docker
 
 Создать файл .env:
+```
 TODO_PORT=7540
-TODO_DBFILE=scheduler.db
+TODO_DBFILE=./scheduler.db
 TODO_PASSWORD=12345
-
+```
 Запустить WSL2 и Docker Desktop
 В WSL2 перейти в директорию проекта и собрать образ:
 ```bash

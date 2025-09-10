@@ -13,8 +13,6 @@ WORKDIR /app
 COPY --from=builder /app/todo-app .
 COPY --from=builder /app/web ./web
 
-EXPOSE 7540
-
 VOLUME /data
 
 CMD ["./todo-app"]

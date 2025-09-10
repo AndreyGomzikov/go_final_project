@@ -4,8 +4,10 @@ import (
 	"net/http"
 )
 
-func Init(mux *http.ServeMux) {
-	mux.HandleFunc("/api/signin", signinHandler)
+func Init(mux *http.ServeMux, cfg Config) {
+	auth := AuthMiddleware(cfg)
+
+	mux.Handle("/api/signin", SigninHandler(cfg))
 	mux.HandleFunc("/api/nextdate", nextDateHandler)
 	mux.HandleFunc("/api/task", auth(taskHandler))
 	mux.HandleFunc("/api/tasks", auth(tasksHandler))

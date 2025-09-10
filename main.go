@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"go1f/pkg/api"
 	"go1f/pkg/db"
 	"go1f/pkg/server"
 )
@@ -14,6 +15,7 @@ const (
 	defaultPort = 7540
 	envDB       = "TODO_DBFILE"
 	envPort     = "TODO_PORT"
+	envPassword = "TODO_PASSWORD"
 )
 
 func envOr(key, def string) string {
@@ -39,8 +41,12 @@ func main() {
 	}
 	defer db.DB.Close()
 
+	cfg := api.Config{
+		Password: os.Getenv(envPassword),
+	}
+
 	port := envPortOr(defaultPort)
-	if err := server.Run(port); err != nil {
+	if err := server.Run(port, cfg); err != nil {
 		log.Fatalf("start http server on port %d: %v", port, err)
 	}
 }

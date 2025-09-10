@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+
 type Task struct {
 	ID      string `json:"id" db:"id"`
 	Date    string `json:"date" db:"date"`
@@ -26,10 +27,10 @@ func AddTask(t *Task) (string, error) {
 }
 
 func UpdateTask(t *Task) error {
-	if t.ID == "" {
-		return fmt.Errorf("missing id")
-	}
-	res, err := DB.Exec(`UPDATE scheduler SET date=?, title=?, comment=?, repeat=? WHERE id=?`, t.Date, t.Title, t.Comment, t.Repeat, t.ID)
+	res, err := DB.Exec(
+		`UPDATE scheduler SET date=?, title=?, comment=?, repeat=? WHERE id=?`,
+		t.Date, t.Title, t.Comment, t.Repeat, t.ID,
+	)
 	if err != nil {
 		return fmt.Errorf("update task: %w", err)
 	}
@@ -89,23 +90,36 @@ func DeleteTask(id string) error {
 func GetTasks(limit int, search string) ([]*Task, error) {
 	var rows *sql.Rows
 	var err error
+
 	if search == "" {
-		rows, err = DB.Query(`SELECT id,date,title,comment,repeat FROM scheduler ORDER BY date LIMIT ?`, limit)
+		rows, err = DB.Query(
+			`SELECT id,date,title,comment,repeat FROM scheduler ORDER BY date LIMIT ?`,
+			limit,
+		)
 	} else {
 		if len(search) == 10 && search[2] == '.' && search[5] == '.' {
 			yyyy := search[6:10]
 			mm := search[3:5]
 			dd := search[0:2]
-			rows, err = DB.Query(`SELECT id,date,title,comment,repeat FROM scheduler WHERE date=? ORDER BY date LIMIT ?`, yyyy+mm+dd, limit)
+			rows, err = DB.Query(
+				`SELECT id,date,title,comment,repeat FROM scheduler WHERE date=? ORDER BY date LIMIT ?`,
+				yyyy+mm+dd, limit,
+			)
 		} else {
 			like := "%" + search + "%"
-			rows, err = DB.Query(`SELECT id,date,title,comment,repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?`, like, like, limit)
+			rows, err = DB.Query(
+				`SELECT id,date,title,comment,repeat FROM scheduler
+				 WHERE title LIKE ? OR comment LIKE ?
+				 ORDER BY date LIMIT ?`,
+				like, like, limit,
+			)
 		}
 	}
 	if err != nil {
 		return nil, fmt.Errorf("query tasks: %w", err)
 	}
 	defer rows.Close()
+
 	var res []*Task
 	for rows.Next() {
 		var t Task
@@ -114,5 +128,10 @@ func GetTasks(limit int, search string) ([]*Task, error) {
 		}
 		res = append(res, &t)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration: %w", err)
+	}
+
 	return res, nil
 }

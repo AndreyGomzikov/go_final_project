@@ -11,6 +11,10 @@ import (
 	"go1f/pkg/db"
 )
 
+const (
+	dateFormat = "20060102"
+)
+
 type addTaskReq struct {
 	Date    string `json:"date"`
 	Title   string `json:"title"`
@@ -21,15 +25,15 @@ type addTaskReq struct {
 func parseDate(s string, now time.Time) (string, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
-		return now.Format("20060102"), nil
+		return now.Format(dateFormat), nil
 	}
 	if s == "today" {
-		return now.Format("20060102"), nil
+		return now.Format(dateFormat), nil
 	}
 	if len(s) != 8 {
 		return "", fmt.Errorf("invalid date format")
 	}
-	_, err := time.Parse("20060102", s)
+	_, err := time.Parse(dateFormat, s)
 	if err != nil {
 		return "", fmt.Errorf("invalid date format")
 	}
@@ -106,14 +110,14 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 			writeError(w, http.StatusBadRequest, "invalid repeat"); return
 		}
 		
-	if date < now.Format("20060102") {
+	if date < now.Format(dateFormat) {
 		if repeat == "" {
-			date = now.Format("20060102")
+			date = now.Format(dateFormat)
 		} else {
-			if next, err2 := NextDate(now.Format("20060102"), date, repeat); err2 == nil && next != "" {
+			if next, err2 := NextDate(now.Format(dateFormat), date, repeat); err2 == nil && next != "" {
 				date = next
 			} else {
-				date = now.Format("20060102")
+				date = now.Format(dateFormat)
 			}
 		}
 	}

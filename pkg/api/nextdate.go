@@ -9,23 +9,33 @@ import (
 	"time"
 )
 
-const dateLayout = "20060102"
+const (
+	dateLayout = "20060102"
+)
 
 func nextDateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	now := r.URL.Query().Get("now")
 	date := r.URL.Query().Get("date")
 	repeat := r.URL.Query().Get("repeat")
+
 	if now == "" || date == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write([]byte(""))
 		return
 	}
+
 	n, err := NextDate(now, date, repeat)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write([]byte(""))
 		return
 	}
+
 	w.Header().Set("Content-Type", "text/plain")
 	_, _ = w.Write([]byte(n))
 }
